@@ -1,4 +1,79 @@
+# MONETA – Personal Expense Tracker
 
+## About the Project
+
+MONETA is a web-based personal expense management application developed using Python Flask and SQLite.
+
+It helps users record daily expenses, manage monthly budgets, monitor spending habits, and generate expense reports through a simple and user-friendly interface.
+
+## Features
+
+### 1. User Registration and Login
+- New users can create an account.
+- Registered users can log in securely.
+- Users can access their personal expense information.
+
+### 2. Dashboard
+- Displays an overview of expenses.
+- Shows total spending and financial summaries.
+- Helps users understand their spending activities.
+
+### 3. Expense Management
+- Add new expenses with title, amount, category, and date.
+- View all recorded expenses.
+- Edit existing expense details.
+- Delete expenses when they are no longer needed.
+
+### 4. Monthly Budget Management
+- Set a monthly spending budget.
+- Manage category-wise budget limits.
+- Monitor expenses against the planned budget.
+
+### 5. Expense Reports
+- Generate expense reports based on the selected month and year.
+- View monthly spending totals.
+- Filter expense records by category.
+- Understand where money is being spent.
+
+## Technologies Used
+
+| Technology | Purpose |
+|---|---|
+| Python | Backend programming |
+| Flask | Web framework |
+| SQLite | Database |
+| Flask-SQLAlchemy | Database management |
+| HTML | Webpage structure |
+| CSS | Website styling |
+
+## Project Screenshots
+
+The screenshots below demonstrate the application's different pages and features.
+
+<!-- Keep all 15 existing screenshot image links below this line, in your arranged order. -->
+
+## Installation and Setup
+
+1. Clone this repository.
+2. Open the project folder.
+3. Create and activate a Python virtual environment.
+4. Install dependencies:
+
+   `pip install -r requirements.txt`
+
+5. Run the application:
+
+   `python app.py`
+
+6. Open your browser and visit:
+
+   `http://127.0.0.1:5000/`
+
+## Author
+
+**Chaithra**
+
+GitHub: https://github.com/chaithra-0123
 
 
 <img width="1057" height="580" alt="Screenshot 2026-11-04 202407" src="https://github.com/user-attachments/assets/bb4afe3a-d0de-4372-8c9a-a60565bdc816" />
