@@ -1,0 +1,92 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>MONETA | {% block title %}Dashboard{% endblock %}</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Premium font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- MONETA custom styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <div class="app-layout">
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+
+            <div class="brand-area">
+                <div class="brand-mark">
+                    <i class="bi bi-wallet2"></i>
+                </div>
+
+                <div>
+                    <h2 class="brand">MONETA</h2>
+                    <p class="brand-caption">PERSONAL FINANCE</p>
+                </div>
+            </div>
+
+            <p class="sidebar-label">WORKSPACE</p>
+
+            <nav class="nav flex-column">
+
+                <a class="nav-link {% if request.path == '/' %}active{% endif %}"
+                   href="/">
+                    <i class="bi bi-grid-1x2"></i>
+                    <span>Dashboard</span>
+                </a>
+
+                <a class="nav-link {% if request.path == '/expenses' %}active{% endif %}"
+                   href="/expenses">
+                    <i class="bi bi-arrow-left-right"></i>
+                    <span>Transactions</span>
+                </a>
+
+                <a class="nav-link {% if request.path == '/monthly-budget' %}active{% endif %}"
+                   href="/monthly-budget">
+                    <i class="bi bi-pie-chart"></i>
+                    <span>Monthly Budget</span>
+                </a>
+
+            </nav>
+
+            <div class="sidebar-bottom">
+                <div class="sidebar-note-icon">
+                    <i class="bi bi-shield-check"></i>
+                </div>
+                <p>Your money. Your decisions.</p>
+                <span>Make every rupee count.</span>
+            </div>
+
+        </aside>
+
+        <!-- Main page area -->
+        <main class="main-content">
+            {% block content %}
+            {% endblock %}
+        </main>
+
+    </div>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+    {% block scripts %}
+    {% endblock %}
+
+</body>
+</html>

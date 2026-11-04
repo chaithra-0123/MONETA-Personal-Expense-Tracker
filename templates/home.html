@@ -1,0 +1,366 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+
+<!-- Dashboard Header -->
+<header class="dashboard-header">
+    <div>
+        <h1>Dashboard</h1>
+    </div>
+
+    <a href="/expenses" class="add-button btn">
+        <i class="bi bi-plus-lg"></i> Manage Expenses
+    </a>
+</header>
+
+<!-- Welcome Banner -->
+<section class="dashboard-hero">
+    <div class="hero-content">
+        <span class="hero-tag">MONETA OVERVIEW</span>
+        <h2>Know your money.<br>Own your future.</h2>
+        <p>Track your spending, understand your habits, and make every rupee count.</p>
+
+        <a href="/expenses" class="hero-link">
+            Explore transactions <i class="bi bi-arrow-right"></i>
+        </a>
+    </div>
+
+    <div class="hero-decoration">
+        <div class="hero-circle hero-circle-one"></div>
+        <div class="hero-circle hero-circle-two"></div>
+        <i class="bi bi-wallet2 hero-wallet"></i>
+        <span class="hero-decoration-caption">SPEND WITH PURPOSE</span>
+    </div>
+</section>
+
+<!-- Financial Summary -->
+<section class="dashboard-summary">
+    <div class="section-heading">
+        <div>
+
+            <h2>Your financial snapshot</h2>
+        </div>
+    </div>
+
+    <div class="summary-cards row g-3">
+
+        <div class="col-12 col-md-6 col-xl-4">
+            <div class="summary-card summary-card-primary h-100">
+                <div class="summary-card-top">
+                    <span class="summary-icon expense-icon">
+                        <i class="bi bi-wallet2"></i>
+                    </span>
+                    <span class="summary-label">TOTAL EXPENSES</span>
+                </div>
+
+                <h2>₹{{ "%.2f"|format(total_expenses) }}</h2>
+                <p class="summary-description">Your recorded spending</p>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-xl-4">
+            <div class="summary-card h-100">
+                <div class="summary-card-top">
+                    <span class="summary-icon transaction-icon">
+                        <i class="bi bi-arrow-left-right"></i>
+                    </span>
+                    <span class="summary-label">TRANSACTIONS</span>
+                </div>
+
+                <h2>{{ expense_count }}</h2>
+                <p class="summary-description">Total expenses recorded</p>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-xl-4">
+            <div class="summary-card h-100">
+                <div class="summary-card-top">
+                    <span class="summary-icon habit-icon">
+                        <i class="bi bi-graph-up-arrow"></i>
+                    </span>
+                    <span class="summary-label">MONEY HABIT</span>
+                </div>
+
+                <h2>Stay aware</h2>
+                <p class="summary-description">Build smarter spending habits</p>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- Spending Analytics -->
+<section class="analytics-section">
+    <div class="section-heading">
+        <div>
+
+            <h2>Spending analytics</h2>
+        </div>
+    </div>
+
+    <div class="charts-section">
+
+        <div class="chart-card">
+            <div class="chart-heading">
+                <div>
+                    <h2>Monthly spending</h2>
+                    <p>Your spending over the last six months</p>
+                </div>
+                <span class="chart-icon">
+                    <i class="bi bi-graph-up"></i>
+                </span>
+            </div>
+
+            <canvas id="monthlyChart"></canvas>
+        </div>
+
+        <div class="chart-card">
+            <div class="chart-heading">
+                <div>
+                    <h2>Spending by category</h2>
+                    <p>See where your money goes</p>
+                </div>
+                <span class="chart-icon">
+                    <i class="bi bi-pie-chart"></i>
+                </span>
+            </div>
+
+            <canvas id="categoryChart"></canvas>
+        </div>
+
+    </div>
+</section>
+<<!-- Recent Transactions Card -->
+    <section class="recent-section">
+
+        <div class="recent-transactions-card">
+
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">YOUR LATEST ACTIVITY</p>
+                    <h2>Recent transactions</h2>
+                </div>
+
+                <a href="/expenses" class="view-all-link">
+                    View all <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="recent-transactions">
+
+                {% if recent_expenses %}
+
+                {% for expense in recent_expenses %}
+
+                <div class="transaction-row">
+
+                    <div class="transaction-symbol">
+                        {{ expense.category[:1]|upper }}
+                    </div>
+
+                    <div class="transaction-details">
+                        <h3>{{ expense.title }}</h3>
+                        <p class="mb-0">
+                            {{ expense.category }} ·
+                            {{ expense.date.strftime('%d %b %Y') }}
+                        </p>
+                    </div>
+
+                    <div class="transaction-amount">
+                        − ₹{{ "%.2f"|format(expense.amount|float) }}
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+                {% else %}
+
+                <div class="empty-transactions">
+                    <i class="bi bi-receipt"></i>
+                    <h3>No transactions yet</h3>
+                    <p>Add your first expense to start tracking your money.</p>
+                    <a href="/expenses" class="add-button btn">Add an expense</a>
+                </div>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </section>
+    <!-- Footer -->
+    <footer class="dashboard-footer">
+        <span>MONETA</span>
+        <p>Manage money with intention.</p>
+    </footer>
+
+    {% endblock %}
+
+
+    {% block scripts %}
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        // Data received from Flask
+        const monthLabels = {{ month_labels | tojson }};
+        const monthAmounts = {{ month_amounts | tojson }};
+
+        const categoryLabels = {{ category_labels | tojson }};
+        const categoryAmounts = {{ category_amounts | tojson }};
+
+
+        // Monthly Spending Chart
+        new Chart(document.getElementById("monthlyChart"), {
+            type: "line",
+
+            data: {
+                labels: monthLabels,
+
+                datasets: [{
+                    label: "Expenses (₹)",
+                    data: monthAmounts,
+
+                    borderColor: "#568477",
+                    backgroundColor: "rgba(86, 132, 119, 0.12)",
+
+                    borderWidth: 3,
+                    pointBackgroundColor: "#D6AD70",
+                    pointBorderColor: "#FFFFFF",
+                    pointBorderWidth: 2,
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
+
+                    fill: true,
+                    tension: 0.35
+                }]
+            },
+
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+
+                plugins: {
+                    legend: {
+                        labels: {
+                            usePointStyle: true
+                        }
+                    },
+
+                    tooltip: {
+                        backgroundColor: "#17243A",
+                        titleColor: "#FFFFFF",
+                        bodyColor: "#FFFFFF",
+                        titleFont: {
+                            weight: "bold",
+                            size: 13
+                        },
+                        bodyFont: {
+                            size: 13
+                        },
+                        padding: 12,
+
+                        callbacks: {
+                            label: function (context) {
+                                return " Spending: ₹" +
+                                    Number(context.raw).toLocaleString("en-IN");
+                            }
+                        }
+                    }
+                },
+
+                scales: {
+                    x: {
+                        ticks: {
+                            color: "#263448",
+                            font: {
+                                weight: "600"
+                            }
+                        },
+                        grid: {
+                            display: false
+                        }
+                    },
+
+                    y: {
+                        beginAtZero: true,
+
+                        ticks: {
+                            color: "#263448",
+                            callback: function (value) {
+                                return "₹" + value;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+
+        // Category Spending Chart
+        new Chart(document.getElementById("categoryChart"), {
+            type: "doughnut",
+
+            data: {
+                labels: categoryLabels,
+
+                datasets: [{
+                    data: categoryAmounts,
+
+                    backgroundColor: [
+                        "#568477",
+                        "#D6AD70",
+                        "#17243A",
+                        "#9BA8A2",
+                        "#B8A6C9",
+                        "#C68F78"
+                    ],
+
+                    borderColor: "#FFFFFF",
+                    borderWidth: 4,
+                    hoverOffset: 8
+                }]
+            },
+
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                cutout: "72%",
+
+                plugins: {
+                    legend: {
+                        position: "bottom",
+
+                        labels: {
+                            color: "#263448",
+                            font: {
+                                size: 13,
+                                weight: "bold"
+                            },
+                            usePointStyle: true,
+                            pointStyle: "circle",
+                            padding: 18
+                        }
+                    },
+
+                    tooltip: {
+                        backgroundColor: "#17243A",
+                        titleColor: "#FFFFFF",
+                        bodyColor: "#FFFFFF",
+                        padding: 12
+                    }
+                }
+            }
+        });
+
+    </script>
+
+    <a href="{{ url_for('logout') }}" class="btn btn-danger">
+        Logout
+    </a>
+
+    {% endblock %}

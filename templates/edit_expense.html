@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Expense{% endblock %}
+
+{% block content %}
+
+<!-- MONETA Welcome Banner -->
+<section class="dashboard-hero">
+    <div class="hero-content">
+        <span class="hero-tag">MONETA OVERVIEW</span>
+        <h2>Every rupee matters.<br>Make every change count.</h2>
+        <p>Review and update your expense details whenever you need.</p>
+
+        <a href="/expenses" class="hero-link">
+            Back to transactions <i class="bi bi-arrow-right"></i>
+        </a>
+    </div>
+
+    <div class="hero-decoration">
+        <div class="hero-circle hero-circle-one"></div>
+        <div class="hero-circle hero-circle-two"></div>
+        <i class="bi bi-wallet2 hero-wallet"></i>
+        <span class="hero-decoration-caption">SPEND WITH PURPOSE</span>
+    </div>
+</section>
+
+<!-- Page Header -->
+<div class="mb-4">
+
+    <h1 class="fw-bold mb-2">Edit Expense</h1>
+    <p class="text-muted">
+        Make changes to your existing transaction details.
+    </p>
+</div>
+
+<!-- Edit Expense Form -->
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-4 p-md-5">
+
+        <div class="d-flex align-items-center mb-4">
+            <span class="summary-icon expense-icon me-3">
+                <i class="bi bi-pencil-square"></i>
+            </span>
+
+            <div>
+                <h5 class="fw-bold mb-1">Expense Details</h5>
+                <p class="text-muted mb-0">
+                    Update the information below.
+                </p>
+            </div>
+        </div>
+
+        <form method="POST" action="{{ url_for('edit_expense', expense_id=expense.id) }}" class="row g-4">
+
+            <!-- Expense Title -->
+            <div class="col-md-6">
+                <label for="title" class="form-label fw-semibold">
+                    Expense Title
+                </label>
+
+                <input type="text" id="title" name="title" class="form-control" value="{{ expense.title }}"
+                    placeholder="Enter expense title" required>
+            </div>
+
+            <!-- Amount -->
+            <div class="col-md-6">
+                <label for="amount" class="form-label fw-semibold">
+                    Amount (₹)
+                </label>
+
+                <input type="number" id="amount" name="amount" class="form-control" value="{{ expense.amount }}"
+                    min="0.01" step="0.01" placeholder="Enter amount" required>
+            </div>
+
+            <!-- Category -->
+            <div class="col-md-6">
+                <label for="category" class="form-label fw-semibold">
+                    Category
+                </label>
+
+                <select id="category" name="category" class="form-select" required>
+                    <option value="Food" {% if expense.category=="Food" %}selected{% endif %}>
+                        Food
+                    </option>
+
+                    <option value="Travel" {% if expense.category=="Travel" %}selected{% endif %}>
+                        Travel
+                    </option>
+
+                    <option value="Shopping" {% if expense.category=="Shopping" %}selected{% endif %}>
+                        Shopping
+                    </option>
+
+                    <option value="Bills" {% if expense.category=="Bills" %}selected{% endif %}>
+                        Bills
+                    </option>
+                </select>
+            </div>
+
+            <!-- Date -->
+            <div class="col-md-6">
+                <label for="date" class="form-label fw-semibold">
+                    Expense Date
+                </label>
+
+                <input type="date" id="date" name="date" class="form-control"
+                    value="{{ expense.date.strftime('%Y-%m-%d') }}" required>
+            </div>
+
+            <div class="col-12">
+                <hr class="my-2">
+
+                <div class="d-flex flex-wrap gap-2">
+                    <button type="submit" class="btn btn-success px-4">
+                        <i class="bi bi-check-circle me-1"></i>
+                        Save Changes
+                    </button>
+
+                    <a href="{{ url_for('show_expenses') }}" class="btn btn-outline-secondary px-4">
+                        <i class="bi bi-x-circle me-1"></i>
+                        Cancel
+                    </a>
+                </div>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+{% endblock %}

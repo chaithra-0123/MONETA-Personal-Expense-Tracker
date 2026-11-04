@@ -1,0 +1,327 @@
+{% extends "base.html" %}
+
+{% block title %}Monthly Budget{% endblock %}
+
+{% block content %}
+
+<!-- MONETA Welcome Banner -->
+<section class="dashboard-hero">
+    <div class="hero-content">
+        <span class="hero-tag">MONETA OVERVIEW</span>
+        <h2>Plan your spending.<br>Shape your future.</h2>
+        <p>Set monthly goals, manage category budgets, and stay in control of your money.</p>
+
+        <a href="/" class="hero-link">
+            Back to dashboard <i class="bi bi-arrow-right"></i>
+        </a>
+    </div>
+
+    <div class="hero-decoration">
+        <div class="hero-circle hero-circle-one"></div>
+        <div class="hero-circle hero-circle-two"></div>
+        <i class="bi bi-wallet2 hero-wallet"></i>
+        <span class="hero-decoration-caption">SPEND WITH PURPOSE</span>
+    </div>
+</section>
+
+<!-- Page Header -->
+<div class="mb-4">
+
+    <h1 class="fw-bold mb-2">Monthly Budget</h1>
+    <p class="text-muted">Plan your spending and stay within your budget.</p>
+</div>
+
+<!-- Success Message -->
+{% if success_message %}
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+    {{ success_message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+{% endif %}
+
+<!-- Budget Summary -->
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-4">
+
+        <h5 class="fw-bold mb-4">Monthly Budget Summary</h5>
+
+        <div class="row g-3">
+
+            <div class="col-md-4">
+                <div class="p-3 rounded bg-light h-100">
+                    <p class="text-muted mb-2">Monthly Budget</p>
+                    <h3 class="fw-bold mb-0">
+                        ₹{{ "%.2f"|format(budget_amount) }}
+                    </h3>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="p-3 rounded bg-light h-100">
+                    <p class="text-muted mb-2">Total Spent</p>
+                    <h3 class="fw-bold text-danger mb-0">
+                        ₹{{ "%.2f"|format(total_spent) }}
+                    </h3>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="p-3 rounded bg-light h-100">
+                    <p class="text-muted mb-2">Remaining Budget</p>
+                    <h3 class="fw-bold mb-0">
+                        ₹{{ "%.2f"|format(remaining_budget) }}
+                    </h3>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Budget Status -->
+        <div class="mt-4">
+
+            {% if remaining_budget < 0 %} <div class="alert alert-danger mb-0">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                Budget exceeded! You spent
+                ₹{{ "%.2f"|format(-remaining_budget) }}
+                more than your monthly budget.
+        </div>
+
+        {% elif remaining_budget == 0 %}
+        <div class="alert alert-warning mb-0">
+            <i class="bi bi-exclamation-circle-fill"></i>
+            You have used your entire monthly budget.
+        </div>
+
+        {% else %}
+        <div class="alert alert-success mb-0">
+            <i class="bi bi-check-circle-fill"></i>
+            You are within your monthly budget!
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+</div>
+
+<!-- Set Monthly Budget -->
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-4">
+
+        <h5 class="fw-bold mb-3">
+            <i class="bi bi-wallet2 me-2"></i>
+            Set Your Monthly Budget
+        </h5>
+
+        <form method="POST" action="/monthly-budget" class="row g-3">
+
+            <input type="hidden" name="form_type" value="monthly">
+
+            <div class="col-md-6">
+                <label for="budget-date" class="form-label">Select month</label>
+                <input type="date" id="budget-date" name="budget_date" class="form-control" value="{{ selected_date }}"
+                    required>
+            </div>
+
+            <div class="col-md-6">
+                <label for="budget-amount" class="form-label">Set your budget (₹)</label>
+                <input type="number" id="budget-amount" name="budget_amount" class="form-control" min="0.01" step="0.01"
+                    placeholder="Enter budget amount" required>
+            </div>
+
+            <div class="col-12">
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-save me-1"></i> Save Budget
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<!-- Category-wise Budget Form -->
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-4">
+
+        <h5 class="fw-bold mb-3" id="category-form-heading">
+            <i class="bi bi-pie-chart me-2"></i>
+            Set Category-wise Budget
+        </h5>
+
+        <form method="POST" action="/monthly-budget" class="row g-3" id="category-budget-form">
+
+            <input type="hidden" name="form_type" value="category">
+
+            <div class="col-md-4">
+                <label class="form-label">Select month</label>
+                <input type="date" name="category_budget_date" class="form-control" value="{{ selected_date }}"
+                    required>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Select category</label>
+                <select name="category" class="form-select" required>
+                    <option value="">Choose category</option>
+
+                    {% for category in categories %}
+                    <option value="{{ category }}">{{ category }}</option>
+                    {% endfor %}
+
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Budget amount (₹)</label>
+                <input type="number" name="category_budget_amount" class="form-control" min="0.01" step="0.01"
+                    placeholder="Enter amount" required>
+            </div>
+
+            <div class="col-12">
+                <button type="submit" class="btn btn-success" id="category-submit-button">
+                    <i class="bi bi-save me-1"></i> Save Category Budget
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<!-- Category-wise Budget Summary -->
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
+
+        <h5 class="fw-bold mb-4">
+            <i class="bi bi-bar-chart me-2"></i>
+            Category-wise Budget Summary
+        </h5>
+
+        <div class="table-responsive">
+            <table class="table align-middle">
+
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Budget</th>
+                        <th>Spent</th>
+                        <th>Remaining</th>
+                        <th>Status</th>
+                        <th>Progress</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for item in category_data %}
+                    <tr>
+                        <td class="fw-semibold">{{ item.name }}</td>
+
+                        <td>₹{{ "%.2f"|format(item.budget) }}</td>
+
+                        <td class="text-danger">
+                            ₹{{ "%.2f"|format(item.spent) }}
+                        </td>
+
+                        <td class="{% if item.remaining < 0 %}text-danger{% else %}text-success{% endif %}">
+                            ₹{{ "%.2f"|format(item.remaining) }}
+                        </td>
+
+                        <td>
+                            {% if item.budget == 0 %}
+                            <span class="badge bg-secondary">Not Set</span>
+
+                            {% elif item.spent >= item.budget %}
+                            <span class="badge bg-danger">Exceeded</span>
+
+                            {% elif item.spent >= item.budget * 0.8 %}
+                            <span class="badge bg-warning text-dark">Warning</span>
+
+                            {% else %}
+                            <span class="badge bg-success">Within Budget</span>
+                            {% endif %}
+                        </td>
+
+                        <td style="min-width: 150px;">
+                            {% if item.budget > 0 %}
+                            {% set percentage = (item.spent / item.budget * 100) %}
+
+                            <div class="progress" style="height: 10px;">
+                                <div class="progress-bar {% if percentage >= 100 %}bg-danger{% else %}bg-success{% endif %}"
+                                    role="progressbar" style="width: {{ [percentage, 100]|min }}%;"
+                                    aria-valuenow="{{ percentage }}" aria-valuemin="0" aria-valuemax="100">
+                                </div>
+                            </div>
+
+                            <small class="text-muted">
+                                {{ "%.1f"|format(percentage) }}% used
+                            </small>
+
+                            {% else %}
+                            <span class="text-muted">Not available</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if item.budget > 0 %}
+                            <button type="button" class="btn btn-sm btn-outline-primary" data-category="{{ item.name }}"
+                                data-amount="{{ item.budget }}" onclick="editCategoryBudget(this)">
+                                Edit
+                            </button>
+                            {% else %}
+                            -
+                            {% endif %}
+                        </td>
+
+                    </tr>
+                    {% endfor %}
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Category Budget Script -->
+<script>
+    function editCategoryBudget(button) {
+
+        const category = button.dataset.category;
+        const amount = button.dataset.amount;
+
+        const form = document.getElementById("category-budget-form");
+
+        const categorySelect = form.querySelector(
+            'select[name="category"]'
+        );
+
+        const amountInput = form.querySelector(
+            'input[name="category_budget_amount"]'
+        );
+
+        const heading = document.getElementById(
+            "category-form-heading"
+        );
+
+        const submitButton = document.getElementById(
+            "category-submit-button"
+        );
+
+        categorySelect.value = category;
+        amountInput.value = amount;
+
+        heading.innerHTML =
+            '<i class="bi bi-pencil-square me-2"></i>Edit ' +
+            category + ' Budget';
+
+        submitButton.innerHTML =
+            '<i class="bi bi-save me-1"></i>Update Category Budget';
+
+        form.scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+        });
+
+        amountInput.focus();
+    }
+</script>
+
+{% endblock %}

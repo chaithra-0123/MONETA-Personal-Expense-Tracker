@@ -1,0 +1,44 @@
+{% extends "auth_base.html" %}
+
+{% block title %}Verify OTP | MONETA{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+
+            <div class="card shadow p-4">
+                <h2 class="text-center mb-3">Verify OTP</h2>
+
+                <p class="text-center text-muted">
+                    Enter the OTP generated for your password reset.
+                </p>
+
+                {% if otp %}
+                <div class="alert alert-info text-center">
+                    Your OTP: <strong>{{ otp }}</strong>
+                </div>
+                {% endif %}
+
+                <form method="POST" action="/verify-otp">
+
+                    <div class="mb-3">
+                        <label class="form-label">Enter OTP</label>
+
+                        <input type="text" name="otp" class="form-control" placeholder="Enter 6-digit OTP" maxlength="6"
+                            pattern="[0-9]{6}" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">
+                        Verify OTP
+                    </button>
+
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}
